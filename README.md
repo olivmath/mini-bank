@@ -17,6 +17,8 @@
 
 ## READTHEDOCS
 
+- [RockTheJVM](https://blog.rockthejvm.com/akka-cassandra-project/)
+
 ## CONTRIBUTING
 
 - [CONTRIBUTING](CONTRIBUTING)
