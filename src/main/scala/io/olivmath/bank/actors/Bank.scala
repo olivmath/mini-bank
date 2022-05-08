@@ -97,22 +97,25 @@ object BankPlayground {
     val rootBehavior: Behavior[NotUsed] = Behaviors.setup { context =>
       val bank = context.spawn(Bank(), "bank")
       val logger = context.log
+      def green(data: String): String = {
+        s"\033[92m\n\n${data}\n\n\033[0m"
+      }
 
       val responseHandler = context.spawn(
         Behaviors.receiveMessage[Response] {
           case BankAccountCreatedResponse(id) =>
-            logger.warn(
-              s"\033[92m\n\nSuccessfully created bank account $id\n\n\033[0m"
+            logger.info(
+              green(s"Successfully created bank account $id")
             )
             Behaviors.same
           case GetBankAccountResponse(maybeBankAccount) =>
-            logger.warn(
-              s"\033[92m\n\nAccount details: $maybeBankAccount\n\n\033[0m"
+            logger.info(
+              green(s"Account details: $maybeBankAccount")
             )
             Behaviors.same
           case BankAccountBalanceUpdateResponse(maybeBackAccount) =>
-            logger.warn(
-              s"\033[92m\n\nSuccessfully update balance $maybeBackAccount\n\n\033[0m"
+            logger.info(
+              green(s"Successfully update balance $maybeBackAccount")
             )
             Behaviors.same
         },
@@ -120,8 +123,8 @@ object BankPlayground {
       )
 
       // bank ! CreateBankAccount("Lucas Oliveira", "BTC", 10, responseHandler)
-      // bank ! GetBankAccount("29fe4537-5eda-4b9e-98f5-e7d985435dee", responseHandler)
-      // bank ! UpdateBalance("29fe4537-5eda-4b9e-98f5-e7d985435dee", "BTC", 100, responseHandler)
+      // bank ! GetBankAccount("UUID_OF_USER_ID", responseHandler)
+      // bank ! UpdateBalance("UUID_OF_USER_ID", "BTC", 100, responseHandler)
 
       Behaviors.empty
     }
