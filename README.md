@@ -3,9 +3,9 @@
 [![Test](https://github.com/olivmath/mini-bank/actions/workflows/test.yml/badge.svg)](https://github.com/olivmath/mini-bank/actions/workflows/test.yml)
 
 - An actor model based mini bank application where users can:
-- [x] create bank accounts
-- [x] see your data
-- [x] deposit/withdraw money.
+    - [x] create bank accounts
+    - [x] see your data
+    - [x] deposit/withdraw money.
 
 ## CREDITS
 
