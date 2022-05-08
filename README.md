@@ -5,6 +5,7 @@
 - Description
 
 ## CREDITS
+- [Rock The JVM](https://github.com/rockthejvm)
 
 ## HOW TO INSTALL
 

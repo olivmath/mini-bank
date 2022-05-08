@@ -1,4 +1,4 @@
-package io.olivmath.actors
+package io.olivmath.bank.actors
 
 import akka.persistence.typed.scaladsl.EventSourcedBehavior
 import akka.persistence.typed.scaladsl.Effect
@@ -7,27 +7,28 @@ import akka.actor.typed.Behavior
 import akka.actor.typed.ActorRef
 
 // a single bank account
-class PersistentBankAccount {
-
+object PersistentBankAccount {
   // commands = message
   sealed trait Command
-  case class CreateBankAccount(
-      user: String,
-      token: String,
-      balance: Int,
-      replyTo: ActorRef[Response]
-  ) extends Command
-  case class UpdateBalance(
-      id: String,
-      token: String,
-      amount: Int,
-      replyTo: ActorRef[Response]
-  ) extends Command
-  case class GetBankAccount(
-      id: String,
-      replyTo: ActorRef[Response]
-  ) extends Command
-
+  object Command {
+    case class CreateBankAccount(
+        user: String,
+        token: String,
+        balance: Int,
+        replyTo: ActorRef[Response]
+    ) extends Command
+    case class UpdateBalance(
+        id: String,
+        token: String,
+        amount: Int,
+        replyTo: ActorRef[Response]
+    ) extends Command
+    case class GetBankAccount(
+        id: String,
+        replyTo: ActorRef[Response]
+    ) extends Command
+  }
+  import Command._
   // event = to persistir in DB
   sealed trait Event
   case class BankAccountCreated(bankAccount: BankAccount) extends Event
@@ -42,13 +43,16 @@ class PersistentBankAccount {
   )
   // response
   sealed trait Response
-  case class BankAccountCreatedResponse(id: String) extends Response
-  case class BankAccountBalanceUpdateResponse(
-      maybeBackAccount: Option[BankAccount]
-  ) extends Response
-  case class GetBankAccountResponse(
-      maybeBackAccount: Option[BankAccount]
-  ) extends Response
+  object Response {
+    case class BankAccountCreatedResponse(id: String) extends Response
+    case class BankAccountBalanceUpdateResponse(
+        maybeBackAccount: Option[BankAccount]
+    ) extends Response
+    case class GetBankAccountResponse(
+        maybeBackAccount: Option[BankAccount]
+    ) extends Response
+  }
+  import Response._
 
   // command handler = message handler => persist an event
   // event hadler => update state
