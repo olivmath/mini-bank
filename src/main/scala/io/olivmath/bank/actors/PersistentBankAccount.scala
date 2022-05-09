@@ -11,46 +11,26 @@ object PersistentBankAccount {
   // commands = message
   sealed trait Command
   object Command {
-    case class CreateBankAccount(
-      user: String,
-      token: String,
-      balance: Int,
-      replyTo: ActorRef[Response]
-    ) extends Command
-    case class UpdateBalance(
-      id: String,
-      token: String,
-      amount: Int,
-      replyTo: ActorRef[Response]
-    ) extends Command
-    case class GetBankAccount(
-      id: String,
-      replyTo: ActorRef[Response]
-    ) extends Command
+    case class CreateBankAccount(user: String, token: String, balance: Int, replyTo: ActorRef[Response]) extends Command
+    case class UpdateBalance(id: String, token: String, amount: Int, replyTo: ActorRef[Response])        extends Command
+    case class GetBankAccount(id: String, replyTo: ActorRef[Response])                                   extends Command
   }
   import Command._
+
   // event = to persistir in DB
   sealed trait Event
   case class BankAccountCreated(bankAccount: BankAccount) extends Event
   case class BalanceUpdated(amount: Int)                  extends Event
 
   // state
-  case class BankAccount(
-    id: String,
-    user: String,
-    token: String,
-    balance: Int
-  )
+  case class BankAccount(id: String, user: String, token: String, balance: Int)
+
   // response
   sealed trait Response
   object Response {
-    case class BankAccountCreatedResponse(id: String) extends Response
-    case class BankAccountBalanceUpdateResponse(
-      maybeBackAccount: Option[BankAccount]
-    ) extends Response
-    case class GetBankAccountResponse(
-      maybeBackAccount: Option[BankAccount]
-    ) extends Response
+    case class BankAccountBalanceUpdateResponse(maybeBackAccount: Option[BankAccount]) extends Response
+    case class GetBankAccountResponse(maybeBackAccount: Option[BankAccount])           extends Response
+    case class BankAccountCreatedResponse(id: String)                                  extends Response                  extends Response
   }
   import Response._
 

@@ -15,8 +15,9 @@ import java.util.UUID
 object Bank {
   // message = command
   import io.olivmath.bank.actors.PersistentBankAccount.Response._
+  import io.olivmath.bank.actors.PersistentBankAccount.Command._
   import io.olivmath.bank.actors.PersistentBankAccount.Command
-  import io.olivmath.bank.actors.PersistentBankAccount.Command.{GetBankAccount, UpdateBalance, CreateBankAccount}
+
   // events
   sealed trait Event
   case class BankAccountCreated(id: String) extends Event
