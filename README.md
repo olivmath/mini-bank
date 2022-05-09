@@ -11,9 +11,26 @@
 
 ## HOW TO INSTALL
 
-- PRE-REQ
-  - [x] [Docker](https://docs.docker.com/get-docker/)
-  - [x] [Sbt](https://www.scala-sbt.org/download.html)
+**HOW TO WORKS**
+![arch](arch.png)
+**PRE-REQ**
+
+- [x] [Docker](https://docs.docker.com/get-docker/)
+- [x] [Sbt](https://www.scala-sbt.org/download.html)
+
+**RUN**
+
+Up Cassadrana DataBase
+
+```
+docker-compose up
+```
+
+Run your Mini-Banks
+
+```
+sbt run
+```
 
 ## READTHEDOCS
 
