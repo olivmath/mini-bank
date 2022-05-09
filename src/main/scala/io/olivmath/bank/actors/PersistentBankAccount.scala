@@ -12,44 +12,44 @@ object PersistentBankAccount {
   sealed trait Command
   object Command {
     case class CreateBankAccount(
-        user: String,
-        token: String,
-        balance: Int,
-        replyTo: ActorRef[Response]
+      user: String,
+      token: String,
+      balance: Int,
+      replyTo: ActorRef[Response]
     ) extends Command
     case class UpdateBalance(
-        id: String,
-        token: String,
-        amount: Int,
-        replyTo: ActorRef[Response]
+      id: String,
+      token: String,
+      amount: Int,
+      replyTo: ActorRef[Response]
     ) extends Command
     case class GetBankAccount(
-        id: String,
-        replyTo: ActorRef[Response]
+      id: String,
+      replyTo: ActorRef[Response]
     ) extends Command
   }
   import Command._
   // event = to persistir in DB
   sealed trait Event
   case class BankAccountCreated(bankAccount: BankAccount) extends Event
-  case class BalanceUpdated(amount: Int) extends Event
+  case class BalanceUpdated(amount: Int)                  extends Event
 
   // state
   case class BankAccount(
-      id: String,
-      user: String,
-      token: String,
-      balance: Int
+    id: String,
+    user: String,
+    token: String,
+    balance: Int
   )
   // response
   sealed trait Response
   object Response {
     case class BankAccountCreatedResponse(id: String) extends Response
     case class BankAccountBalanceUpdateResponse(
-        maybeBackAccount: Option[BankAccount]
+      maybeBackAccount: Option[BankAccount]
     ) extends Response
     case class GetBankAccountResponse(
-        maybeBackAccount: Option[BankAccount]
+      maybeBackAccount: Option[BankAccount]
     ) extends Response
   }
   import Response._
@@ -75,9 +75,7 @@ object PersistentBankAccount {
           } else {
             Effect
               .persist(BalanceUpdated(amount))
-              .thenReply(replyTo)(newState =>
-                BankAccountBalanceUpdateResponse(Some(newState))
-              )
+              .thenReply(replyTo)(newState => BankAccountBalanceUpdateResponse(Some(newState)))
           }
         }
       }
@@ -90,12 +88,11 @@ object PersistentBankAccount {
     }
   }
 
-  def apply(id: String): Behavior[Command] = {
+  def apply(id: String): Behavior[Command] =
     EventSourcedBehavior[Command, Event, BankAccount](
       persistenceId = PersistenceId.ofUniqueId(id),
       emptyState = BankAccount(id, "", "", 0),
       commandHandler = commandHandler,
       eventHandler = eventHandler
     )
-  }
 }
