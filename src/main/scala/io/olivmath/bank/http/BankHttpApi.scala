@@ -75,69 +75,67 @@ class BankHttpApi(bank: ActorRef[Command])(implicit system: ActorSystem[_]) {
   implicit val timeout: Timeout = Timeout(5.seconds)
 
   def createBankAccount(request: BankAccountCreateRequest): Future[Response] =
-    // convert request to Command
-    // send the command to bank
-    // expect response
     bank.ask(replyTo => request.toCommand(replyTo))
 
   def getBankAccount(id: String): Future[Response] =
-    // send command to bank
-    // expect response
     bank.ask(replyTo => GetBankAccount(id, replyTo))
 
   def updateBankAccount(id: String, request: BankAccountUpdateRequest) =
-    // convert request to Command
-    // send command to bank
-    // expect reponse
     bank.ask(replyTo => request.toCommand(id, replyTo))
+
+  def httpCreateBankAccount = post {
+    // parse the payload
+    entity(as[BankAccountCreateRequest]) { request =>
+      onSuccess(createBankAccount(request)) {
+        // send HTTP response
+        case BankAccountCreatedResponse(id) =>
+          respondWithDefaultHeader(Location(s"/bank/$id")) {
+            complete(StatusCodes.Created)
+          }
+      }
+    }
+  }
+
+  def httpGetAllAccouts = get {
+    complete(
+      StatusCodes.Created
+    )
+  }
+
+  def httpGetAccount(id: String) = get {
+    onSuccess(getBankAccount(id)) {
+      // send HTTP response
+      case GetBankAccountResponse(maybeAccount) =>
+        maybeAccount match {
+          case Some(account) => complete(account)
+          case None =>
+            complete(
+              StatusCodes.NotFound,
+              FailureResponse(s"Account $id cannot be found")
+            )
+        }
+    }
+  }
+
+  def httpUpdateBalance(id: String) = put {
+    // parse the payload
+    entity(as[BankAccountUpdateRequest]) { request =>
+      onSuccess(updateBankAccount(id, request)) { case BankAccountBalanceUpdateResponse(maybeAccount) =>
+        maybeAccount match {
+          case Some(account) => complete(account)
+          case None          => complete(FailureResponse(s"Account $id cannot be found"))
+        }
+      }
+    }
+  }
 
   val routes =
     pathPrefix("bank") {
       pathEndOrSingleSlash {
-        post {
-          // parse the payload
-          entity(as[BankAccountCreateRequest]) { request =>
-            onSuccess(createBankAccount(request)) {
-              // send HTTP response
-              case BankAccountCreatedResponse(id) =>
-                respondWithDefaultHeader(Location(s"/bank/$id")) {
-                  complete(StatusCodes.Created)
-                }
-            }
-          }
-        } ~
-          get {
-            complete(
-              StatusCodes.Created
-            )
-          }
+        httpCreateBankAccount ~ httpGetAllAccouts
       } ~
         path(Segment) { id =>
-          get {
-            onSuccess(getBankAccount(id)) {
-              // send HTTP response
-              case GetBankAccountResponse(maybeAccount) =>
-                maybeAccount match {
-                  case Some(account) => complete(account)
-                  case None =>
-                    complete(
-                      StatusCodes.NotFound,
-                      FailureResponse(s"Account $id cannot be found")
-                    )
-                }
-            }
-          } ~
-            put {
-              // parse the payload
-              entity(as[BankAccountUpdateRequest]) { request =>
-                onSuccess(updateBankAccount(id, request)) { case BankAccountBalanceUpdateResponse(maybeAccount) =>
-                  maybeAccount match {
-                    case Some(account) => complete(account)
-                    case None          => complete(FailureResponse(s"Account $id cannot be found"))
-                  }
-                }
-              }
-            }
+          httpGetAccount(id) ~ httpUpdateBalance(id)
         }
     }
 }

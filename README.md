@@ -11,14 +11,15 @@
 
 ## HOW TO INSTALL
 
-**HOW TO WORKS**
-![arch](arch.png)
 **PRE-REQ**
 
 - [x] [Docker](https://docs.docker.com/get-docker/)
 - [x] [Sbt](https://www.scala-sbt.org/download.html)
 
-**RUN**
+**HOW TO WORKS**
+![arch](arch.png)
+
+**HOW TO RUN**
 
 Up Cassadrana DataBase
 
