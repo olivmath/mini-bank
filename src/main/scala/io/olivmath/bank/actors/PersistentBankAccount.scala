@@ -30,7 +30,7 @@ object PersistentBankAccount {
   object Response {
     case class BankAccountBalanceUpdateResponse(maybeBackAccount: Option[BankAccount]) extends Response
     case class GetBankAccountResponse(maybeBackAccount: Option[BankAccount])           extends Response
-    case class BankAccountCreatedResponse(id: String)                                  extends Response                  extends Response
+    case class BankAccountCreatedResponse(id: String)                                  extends Response
   }
   import Response._
 
